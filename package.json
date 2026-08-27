@@ -1,0 +1,48 @@
+{
+  "name": "comunidad-conecta",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plataforma neutral para la gestión integral de comunidades de propietarios.",
+  "scripts": {
+    "dev": "node node_modules/next/dist/bin/next dev",
+    "build": "node node_modules/next/dist/bin/next build",
+    "start": "node node_modules/next/dist/bin/next start",
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit",
+    "lint": "node node_modules/eslint/bin/eslint.js .",
+    "test": "node node_modules/vitest/vitest.mjs run",
+    "test:watch": "node node_modules/vitest/vitest.mjs",
+    "db:migrate": "node --env-file=.env.local scripts/migrate.mjs",
+    "db:seed": "node --env-file=.env.local scripts/seed.mjs",
+    "db:smoke": "node --env-file=.env.local scripts/db-smoke.mjs",
+    "db:verify-temporal": "node --env-file=.env.local scripts/verify-temporal.mjs",
+    "test:accounting-http": "node --env-file=.env.local scripts/run-accounting-http-smoke.mjs",
+    "test:accounting-automation": "node --env-file=.env.local scripts/run-accounting-automation-smoke.mjs",
+    "test:accounting-ui": "node --env-file=.env.local scripts/accounting-visual-smoke.mjs",
+    "test:article-ui": "node --env-file=.env.local scripts/article-resident-visual-smoke.mjs",
+    "verify:owner-report": "node --env-file=.env.local scripts/verify-owner-report.mjs",
+    "setup": "npm run db:migrate && npm run db:seed"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@types/pdfkit": "^0.17.6",
+    "lucide-react": "^1.31.0",
+    "next": "^16.3.0",
+    "pdfkit": "^0.19.1",
+    "pg": "^8.23.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "@types/pg": "^8.21.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.0",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.7"
+  }
+}

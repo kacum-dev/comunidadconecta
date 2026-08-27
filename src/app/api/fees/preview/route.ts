@@ -1,0 +1,1 @@
+import type{NextRequest}from"next/server";import{assertSameOrigin,handleApiError,noStoreJson,requireApiContext}from"@/lib/api";import{previewFeeIssue}from"@/lib/fees";export async function POST(request:NextRequest){try{assertSameOrigin(request);return noStoreJson(await previewFeeIssue(await requireApiContext(),await request.json()));}catch(error){return handleApiError(error);}}

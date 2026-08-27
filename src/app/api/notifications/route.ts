@@ -1,0 +1,1 @@
+import{handleApiError,noStoreJson,requireApiContext}from"@/lib/api";import{listNotifications}from"@/lib/operations";export async function GET(){try{return noStoreJson(await listNotifications(await requireApiContext()));}catch(e){return handleApiError(e);}}

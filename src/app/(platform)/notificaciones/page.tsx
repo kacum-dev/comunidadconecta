@@ -1,0 +1,1 @@
+import type{Metadata}from"next";import{NotificationCenter}from"@/components/NotificationCenter";export const metadata:Metadata={title:"Notificaciones"};export default function NotificationsPage(){return <NotificationCenter/>}

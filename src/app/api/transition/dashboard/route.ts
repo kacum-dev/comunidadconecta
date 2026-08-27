@@ -1,0 +1,1 @@
+import type{NextRequest}from"next/server";import{handleApiError,noStoreJson,requireApiContext}from"@/lib/api";import{getTransition}from"@/lib/transition";export async function GET(r:NextRequest){try{return noStoreJson(await getTransition(await requireApiContext(),r.nextUrl.searchParams.get("id")||undefined));}catch(e){return handleApiError(e);}}

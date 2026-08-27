@@ -1,0 +1,1 @@
+import{handleApiError,noStoreJson,requireApiContext}from"@/lib/api";import{getOperations}from"@/lib/operations";export async function GET(){try{return noStoreJson(await getOperations(await requireApiContext()));}catch(e){return handleApiError(e);}}

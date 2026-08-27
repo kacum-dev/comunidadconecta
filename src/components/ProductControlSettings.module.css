@@ -1,0 +1,29 @@
+.slot { margin-bottom: 1rem; }
+.card { border: 1px solid var(--border); border-radius: 18px; background: var(--surface, #fff); padding: 1.25rem; box-shadow: 0 12px 35px rgb(15 23 42 / .06); }
+.header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 1rem; align-items: start; }
+.header h2 { margin: .2rem 0 .35rem; font-size: 1.15rem; }
+.header p, .activation p { margin: 0; color: var(--muted-foreground, #64748b); font-size: .9rem; line-height: 1.5; }
+.icon { display: grid; place-items: center; width: 2.65rem; height: 2.65rem; color: #087f5b; background: #e6fcf5; border-radius: 13px; }
+.eyebrow { color: #087f5b; font-size: .7rem; font-weight: 800; letter-spacing: .09em; }
+.status { border-radius: 999px; padding: .38rem .7rem; font-size: .75rem; font-weight: 750; white-space: nowrap; }
+.community { color: #087f5b; background: #d3f9d8; }
+.commercial { color: #5f3dc4; background: #e5dbff; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+.field label { display: block; margin-bottom: .4rem; font-size: .82rem; font-weight: 700; }
+.field select, .activationForm input { width: 100%; min-height: 44px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface, #fff); padding: .65rem .75rem; color: inherit; }
+.field small { display: block; margin-top: .4rem; color: var(--muted-foreground, #64748b); line-height: 1.4; }
+.identity { display: grid; grid-template-columns: 1.4fr 1fr .7fr; gap: .75rem; margin-top: 1rem; padding: .85rem; border-radius: 12px; background: var(--muted, #f8fafc); }
+.identity span { min-width: 0; }
+.identity small { display: block; color: var(--muted-foreground, #64748b); font-size: .65rem; font-weight: 750; letter-spacing: .06em; }
+.identity code, .identity strong { display: block; margin-top: .25rem; overflow: hidden; text-overflow: ellipsis; font-size: .78rem; white-space: nowrap; }
+.actions { display: flex; gap: .6rem; margin-top: 1rem; }
+.activation { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, .8fr); gap: 1rem; align-items: center; margin-top: 1rem; padding: 1rem; border: 1px dashed #9775fa; border-radius: 13px; background: #f8f0fc; }
+.activationForm { display: flex; gap: .5rem; }
+.license, .warning { display: flex; gap: .7rem; align-items: center; margin-top: 1rem; padding: .85rem; border-radius: 12px; }
+.license { color: #5f3dc4; background: #f3f0ff; }
+.license small, .warning small { display: block; margin-top: .15rem; color: inherit; opacity: .8; }
+.warning { color: #8a4b08; background: #fff4e6; }
+.success, .error { margin-top: .8rem; padding: .7rem .85rem; border-radius: 10px; font-size: .85rem; }
+.success { color: #087f5b; background: #d3f9d8; }
+.error { color: #c92a2a; background: #fff5f5; }
+@media (max-width: 760px) { .header { grid-template-columns: auto 1fr; } .status { grid-column: 1 / -1; width: fit-content; } .grid, .identity, .activation { grid-template-columns: 1fr; } .activationForm, .actions { flex-direction: column; } }

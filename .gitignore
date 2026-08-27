@@ -1,0 +1,27 @@
+# Dependencies and builds
+node_modules/
+.next/
+out/
+output/
+coverage/
+*.tsbuildinfo
+
+# Secrets and local configuration
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Runtime data and logs
+storage/
+*.log
+npm-debug.log*
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Temporary document inspection
+tmp/

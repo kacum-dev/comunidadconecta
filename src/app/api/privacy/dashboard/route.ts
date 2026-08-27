@@ -1,0 +1,1 @@
+import{handleApiError,noStoreJson,requireApiContext}from"@/lib/api";import{getPrivacyDashboard}from"@/lib/privacy";export async function GET(){try{return noStoreJson(await getPrivacyDashboard(await requireApiContext()));}catch(e){return handleApiError(e);}}
