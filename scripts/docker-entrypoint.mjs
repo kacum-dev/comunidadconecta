@@ -12,11 +12,22 @@ function run(command, args, label) {
   });
 }
 
+function enabled(value) {
+  return ["1", "true", "yes", "on"].includes(String(value || "").trim().toLowerCase());
+}
+
 const migrationsEnabled = !["0", "false", "no"].includes((process.env.RUN_MIGRATIONS || "true").toLowerCase());
+const initialBootstrapEnabled = enabled(process.env.INITIAL_ADMIN_BOOTSTRAP_ENABLED);
 
 try {
   if (migrationsEnabled) await run(process.execPath, ["scripts/migrate.mjs"], "Aplicando migraciones de PostgreSQL");
   else console.log("[startup] Migraciones desactivadas con RUN_MIGRATIONS=false");
+
+  if (initialBootstrapEnabled) {
+    await run(process.execPath, ["scripts/bootstrap-initial-admin.mjs"], "Preparando administrador inicial");
+  } else {
+    console.log("[startup] Bootstrap inicial desactivado");
+  }
 } catch (error) {
   console.error("[startup] No se puede iniciar la aplicación:", error);
   process.exit(1);
