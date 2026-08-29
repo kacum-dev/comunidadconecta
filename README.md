@@ -78,6 +78,24 @@ flowchart LR
 
 6. Abre [http://localhost:3000/login](http://localhost:3000/login).
 
+## Actualizaciones desde el origen oficial
+
+El origen oficial de Comunidad Conecta es `https://github.com/kacum-dev/comunidadconecta`.
+
+Una copia estándar puede comprobar y aplicar actualizaciones seguras desde la raíz del proyecto con:
+
+```bash
+npm run update:official
+```
+
+El comando solo hace `fast-forward` cuando no existen cambios propios. Si detecta una versión personalizada, se detiene sin sobrescribir archivos. Para preparar una integración revisable en una rama separada:
+
+```bash
+npm run update:official -- --prepare
+```
+
+Consulta [Actualizaciones desde el repositorio oficial](docs/UPDATES.md) para el modelo `origin`/`upstream`, personalizaciones, pruebas y despliegues gestionados por KACUM.
+
 ## Variables de entorno
 
 | Variable | Obligatoria | Descripción |
@@ -130,6 +148,7 @@ Miguel Ruiz dispone de los perfiles de Presidencia y Propietario en la misma com
 | `npm run build` | Genera la compilación standalone de producción. |
 | `npm start` | Inicia la compilación de producción. |
 | `npm run setup` | Ejecuta las migraciones y el seed. |
+| `npm run update:official` | Comprueba y aplica una actualización segura desde el upstream oficial. |
 | `npm run db:migrate` | Aplica las migraciones pendientes. |
 | `npm run db:seed` | Crea o actualiza usuarios y datos demo. |
 | `npm run db:smoke` | Comprueba la estructura y el aislamiento de la base. |
@@ -193,6 +212,7 @@ Antes de un piloto real, configura TLS, copias de seguridad verificadas, rotaci�
 ## Documentación adicional
 
 - [Despliegue en Coolify](docs/COOLIFY_DEPLOY.md)
+- [Actualizaciones](docs/UPDATES.md)
 - [Servicios digitales](docs/DIGITAL_SERVICES.md)
 - [Control de producto con LAB OS](docs/LABOS_PRODUCT_CONTROL.md)
 - [Revisión funcional para propietarios](docs/articulo-propietario-revisado.md)
