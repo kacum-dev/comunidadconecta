@@ -11,6 +11,7 @@
     "lint": "node node_modules/eslint/bin/eslint.js .",
     "test": "node node_modules/vitest/vitest.mjs run",
     "test:watch": "node node_modules/vitest/vitest.mjs",
+    "update:official": "node scripts/update-from-official.mjs",
     "db:migrate": "node --env-file=.env.local scripts/migrate.mjs",
     "db:seed": "node --env-file=.env.local scripts/seed.mjs",
     "db:smoke": "node --env-file=.env.local scripts/db-smoke.mjs",
