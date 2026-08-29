@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ApiError, assertSameOrigin, handleApiError } from "@/lib/api";
 import { createSession } from "@/lib/auth";
 import { query } from "@/lib/db";
+import { isCustomerInstance } from "@/lib/instance-mode";
 import { verifyPassword, type PasswordParams } from "@/lib/password";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,7 @@ const dummyParams: PasswordParams = { N: 32768, r: 8, p: 1, keyLength: 64 };
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isCustomerInstance()) throw new ApiError(404, "Acceso privado no disponible en la instancia demo.", "not_found");
     assertSameOrigin(request);
     const parsed = loginSchema.safeParse(await request.json());
     if (!parsed.success) throw new ApiError(400, "Revisa el correo y la contraseña.", "validation_error");
@@ -77,4 +79,3 @@ export async function POST(request: NextRequest) {
     return handleApiError(error);
   }
 }
-
