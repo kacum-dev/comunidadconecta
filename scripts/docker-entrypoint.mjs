@@ -16,14 +16,27 @@ function enabled(value) {
   return ["1", "true", "yes", "on"].includes(String(value || "").trim().toLowerCase());
 }
 
+function instanceMode() {
+  const mode = String(process.env.KACUM_INSTANCE_MODE || "customer").trim().toLowerCase();
+  if (mode !== "demo" && mode !== "customer") {
+    throw new Error('KACUM_INSTANCE_MODE debe ser "demo" o "customer"');
+  }
+  return mode;
+}
+
 const migrationsEnabled = !["0", "false", "no"].includes((process.env.RUN_MIGRATIONS || "true").toLowerCase());
 const initialBootstrapEnabled = enabled(process.env.INITIAL_ADMIN_BOOTSTRAP_ENABLED);
 
 try {
+  const mode = instanceMode();
+  console.log(`[startup] Modo de instancia: ${mode}`);
+
   if (migrationsEnabled) await run(process.execPath, ["scripts/migrate.mjs"], "Aplicando migraciones de PostgreSQL");
   else console.log("[startup] Migraciones desactivadas con RUN_MIGRATIONS=false");
 
-  if (initialBootstrapEnabled) {
+  if (mode === "demo") {
+    await run(process.execPath, ["scripts/bootstrap-demo.mjs"], "Preparando entorno de demostración aislado");
+  } else if (initialBootstrapEnabled) {
     await run(process.execPath, ["scripts/bootstrap-initial-admin.mjs"], "Preparando administrador inicial");
   } else {
     console.log("[startup] Bootstrap inicial desactivado");
