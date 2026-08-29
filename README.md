@@ -2,20 +2,33 @@
 
 Plataforma web multi-comunidad para la gestión integral de comunidades de propietarios. La comunidad conserva la titularidad de su cuenta, sus datos y su historial, mientras que cada administrador trabaja mediante permisos y mandatos revocables.
 
-La aplicación reúne gestión económica, gobierno, operaciones, documentación y privacidad en una PWA responsive construida con Next.js y PostgreSQL.
+Comunidad Conecta forma parte del ecosistema de productos de **Kacum** y está diseñada para poder instalarse en infraestructura propia, mantener los datos bajo control de la comunidad y seguir funcionando sin depender de un proveedor SaaS concreto.
+
+La aplicación reúne gestión económica, contabilidad, gobierno, operaciones, documentación, privacidad y servicios digitales en una PWA responsive construida con Next.js y PostgreSQL.
+
+## Principios del proyecto
+
+- **La comunidad conserva sus datos.** La base de datos y los documentos pertenecen a la instalación, no al administrador de fincas ni a Kacum.
+- **El cambio de administrador no rompe la continuidad.** Permisos, mandatos y procesos de transición permiten sustituir al gestor sin perder el historial.
+- **La transparencia debe ser comprensible.** El objetivo no es acumular PDFs, sino relacionar decisiones, gastos, documentos, incidencias, acuerdos y evidencias.
+- **El propietario está en el centro.** La experiencia móvil, los permisos por vivienda y los flujos guiados priorizan el uso cotidiano por personas no técnicas.
+- **Las integraciones son sustituibles.** Banca, pagos, firma, OCR, IA, correo o push se conectan como proveedores externos sin convertirse en propietarios de los datos.
+- **Privacidad por defecto.** El aislamiento entre comunidades se aplica en servidor y PostgreSQL; seleccionar una comunidad en la interfaz no concede acceso por sí mismo.
 
 ## Qué incluye
 
 - Gestión de comunidades, bloques, portales, viviendas, anexos, zonas comunes y censo.
 - Roles por comunidad para presidencia, vicepresidencia, secretaría, tesorería, administración, propietarios, residentes, proveedores, auditoría y soporte.
 - Economía comunitaria: presupuestos, cuotas, derramas, recibos, facturas, conciliación bancaria y contabilidad de doble partida.
+- Núcleo contable con plan de cuentas, asientos, automatizaciones y trazabilidad de operaciones.
 - Juntas y acuerdos: convocatoria, orden del día, asistencia, representaciones, votaciones, actas y cierre.
 - Incidencias, órdenes de trabajo, proveedores, activos, reservas y comunicaciones.
-- Archivo documental versionado, con hash SHA-256 y un límite de 10 MB por archivo.
+- Archivo documental versionado, con hash SHA-256 y control de acceso.
 - Solicitudes de privacidad, registro de actividades, brechas, auditoría y trazabilidad.
 - Transición entre administradores con inventario, responsables y aceptación de entregas.
 - PWA responsive, experiencia específica para residentes y modo de lectura cómoda.
 - Centro de servicios digitales preparado para integrar banca, pagos, firma, OCR, IA, importaciones y notificaciones push sin vincular los datos a un proveedor concreto.
+- Control opcional de instalación, telemetría agregada y licencias comerciales mediante Kacum.
 
 > Algunas capacidades digitales incluyen el modelo de datos, los permisos y la trazabilidad, pero necesitan contratar y configurar un proveedor externo antes de poder utilizarse en producción. Consulta [Servicios digitales](docs/DIGITAL_SERVICES.md).
 
@@ -26,14 +39,14 @@ flowchart LR
     U[Usuarios y PWA] --> N[Next.js 16<br/>App Router y API]
     N --> P[(PostgreSQL)]
     N -. integraciones opcionales .-> E[Servicios externos]
-    N -. licencia y telemetría opcional .-> L[LAB OS]
+    N -. licencia y telemetría opcional .-> K[Kacum]
 ```
 
 - **Aplicación:** Next.js 16, React 19 y TypeScript.
 - **Persistencia:** PostgreSQL con migraciones SQL versionadas.
 - **Seguridad de datos:** Row-Level Security, consultas acotadas por `community_id`, sesiones revocables y denegación por defecto.
 - **Despliegue:** imagen Docker standalone, migraciones al arrancar y healthcheck conectado a PostgreSQL.
-- **Operación:** la telemetría es opcional y está desactivada por defecto.
+- **Operación:** la telemetría hacia Kacum es opcional y está desactivada por defecto.
 
 ## Requisitos
 
@@ -94,7 +107,7 @@ El comando solo hace `fast-forward` cuando no existen cambios propios. Si detect
 npm run update:official -- --prepare
 ```
 
-Consulta [Actualizaciones desde el repositorio oficial](docs/UPDATES.md) para el modelo `origin`/`upstream`, personalizaciones, pruebas y despliegues gestionados por KACUM.
+Consulta [Actualizaciones desde el repositorio oficial](docs/UPDATES.md) para el modelo `origin`/`upstream`, personalizaciones, pruebas y despliegues gestionados por Kacum.
 
 ## Variables de entorno
 
@@ -109,7 +122,7 @@ Consulta [Actualizaciones desde el repositorio oficial](docs/UPDATES.md) para el
 | `SEED_ADMIN_EMAIL` | Seed | Correo de la cuenta inicial de administración. |
 | `SEED_ADMIN_PASSWORD` | Seed | Contraseña de la cuenta inicial de administración. |
 | `SEED_DEMO_PASSWORD` | Seed demo | Contraseña común de los perfiles de demostración. |
-| `LABOS_CONTROL_PLANE_URL` | No | Endpoint del control de producto y telemetría opcional. |
+| `KACUM_CONTROL_PLANE_URL` | No | Endpoint opcional de Kacum para registro técnico, telemetría agregada y licencias comerciales. |
 | `COMMUNITY_CONNECTA_PRODUCT_CODE` | No | Código del producto; por defecto `comunidad-conecta`. |
 | `APP_VERSION` | No | Versión comunicada al control de producto. |
 | `PORT` | No | Puerto HTTP; por defecto `3000`. |
@@ -188,6 +201,8 @@ npm run db:smoke
 npm run build
 ```
 
+La rama `main` está protegida y los cambios deben pasar por Pull Request y superar los controles de calidad configurados en GitHub Actions.
+
 Los cambios de esquema deben añadirse como una migración nueva y progresiva. No modifiques una migración que ya se haya aplicado en un entorno compartido ni elimines tablas para resolver colisiones de esquema.
 
 ## Despliegue
@@ -206,6 +221,7 @@ La guía [Despliegue en Coolify](docs/COOLIFY_DEPLOY.md) detalla las variables s
 - Las credenciales de integraciones se cifran antes de persistirse.
 - Las páginas y respuestas API con datos personales no se almacenan en la caché de la PWA.
 - La URL utilizada para migraciones puede necesitar privilegios elevados, pero la aplicación debe operar con el rol restringido `comunidad_conecta_app` dentro de transacciones con contexto de tenant.
+- La telemetría de producto es opcional, agregada y está desactivada por defecto.
 
 Antes de un piloto real, configura TLS, copias de seguridad verificadas, rotación de secretos y una revisión profesional de los cálculos jurídicos, el voto remoto y las integraciones reguladas.
 
@@ -214,10 +230,14 @@ Antes de un piloto real, configura TLS, copias de seguridad verificadas, rotaci�
 - [Despliegue en Coolify](docs/COOLIFY_DEPLOY.md)
 - [Actualizaciones](docs/UPDATES.md)
 - [Servicios digitales](docs/DIGITAL_SERVICES.md)
-- [Control de producto con LAB OS](docs/LABOS_PRODUCT_CONTROL.md)
+- [Control de producto y licencias con Kacum](docs/KACUM_PRODUCT_CONTROL.md)
 - [Revisión funcional para propietarios](docs/articulo-propietario-revisado.md)
 - [Auditoría artículo-aplicación](docs/auditoria-articulo-aplicacion.md)
 
-## Modelo de uso
+## Kacum y el modelo de uso
 
-Las comunidades pueden instalar y utilizar la aplicación en su propio servidor. La explotación comercial por terceros se controla mediante una licencia emitida desde LAB OS; la licencia acredita la autorización comercial, pero no desbloquea módulos ni transfiere datos de la comunidad.
+Comunidad Conecta es un proyecto de Kacum con una arquitectura orientada a la soberanía de datos y al despliegue independiente.
+
+Las comunidades pueden instalar y utilizar la aplicación en su propio servidor. La explotación comercial por terceros se controla mediante una autorización o licencia emitida por Kacum; esa licencia acredita el uso comercial permitido, pero no desbloquea módulos, no concede acceso remoto a la instalación y no transfiere datos de la comunidad.
+
+Consulta [Control de producto y licencias con Kacum](docs/KACUM_PRODUCT_CONTROL.md) para conocer qué información técnica puede compartirse de forma opcional y cómo funciona la activación comercial.

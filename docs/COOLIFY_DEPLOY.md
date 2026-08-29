@@ -29,14 +29,21 @@ Configura estas variables como secretos de ejecución en Coolify:
 | `DATABASE_URL` | Sí | URL PostgreSQL completa | Aplicación y migraciones |
 | `DATABASE_SSL` | Sí | `true` si el proveedor exige TLS; en otro caso `false` | Conexión PostgreSQL |
 | `SESSION_COOKIE_SECURE` | Sí | `true` en producción | Impide enviar la sesión fuera de HTTPS |
+| `SETTINGS_ENCRYPTION_KEY` | Sí | Secreto aleatorio de 32 caracteres o más | Cifrado de credenciales de integraciones |
+| `COMMUNICATION_INGEST_SECRET` | Sí | Secreto aleatorio de 32 caracteres o más | Autenticación de entrada de comunicaciones |
 | `RUN_MIGRATIONS` | Sí | `true` | Aplica migraciones antes de iniciar Next.js |
 | `PORT` | Sí | `3000` | Puerto interno del contenedor |
 | `HOSTNAME` | Sí | `0.0.0.0` | Escucha dentro del contenedor |
 | `SEED_ADMIN_EMAIL` | Solo para seed | Correo inicial de administración | Creación o actualización de la cuenta inicial |
 | `SEED_ADMIN_PASSWORD` | Solo para seed | Secreto de 12 caracteres o más | Contraseña de administración |
 | `SEED_DEMO_PASSWORD` | Solo para seed demo | Secreto de 12 caracteres o más | Contraseña de perfiles demostrativos |
+| `KACUM_CONTROL_PLANE_URL` | No | Endpoint oficial indicado por Kacum | Registro técnico opcional, telemetría agregada y activación comercial |
+| `COMMUNITY_CONNECTA_PRODUCT_CODE` | No | `comunidad-conecta` | Identificador del producto |
+| `APP_VERSION` | No | Versión desplegada | Identificación técnica de la instalación |
 
-No copies `.env.local` al repositorio ni a la configuración de build. Introduce sus valores directamente en la sección de variables de Coolify y márcalos como secretos.
+No copies `.env.local` al repositorio ni a la configuración de build. Introduce sus valores directamente en la sección de variables de Coolify y marca como secretos los valores sensibles.
+
+La conexión con Kacum es opcional. Si `KACUM_CONTROL_PLANE_URL` no está configurada, la aplicación sigue funcionando con normalidad salvo las operaciones que requieren expresamente el servicio de control de producto, como una nueva activación comercial o una sincronización voluntaria. Consulta [Control de producto y licencias con Kacum](KACUM_PRODUCT_CONTROL.md).
 
 ## 4. Migraciones y arranque
 
@@ -108,6 +115,7 @@ Recomendaciones:
 4. Comprueba cambio de comunidad/perfil, listado de viviendas y descarga de documentos.
 5. Revisa los logs de arranque para confirmar qué migraciones se aplicaron.
 6. Verifica que la cookie `cc_session` aparece con `Secure`, `HttpOnly` y `SameSite=Strict`.
+7. Si has configurado Kacum, abre **Configuración → Licencia y privacidad** y verifica el estado del control de producto sin habilitar telemetría salvo decisión expresa.
 
 ## 9. Actualizaciones y rollback
 
@@ -115,6 +123,7 @@ Recomendaciones:
 - Las migraciones son progresivas y no tienen rollback automático. Restaura un backup si una reversión de esquema fuera necesaria.
 - Mantén inicialmente una sola réplica. Si escalas horizontalmente, recuerda que cada réplica abre hasta 10 conexiones PostgreSQL y ajusta el límite de la base en consecuencia.
 - Las sesiones están en PostgreSQL, por lo que no requieren afinidad de sesión entre réplicas.
+- Para instalaciones que siguen el repositorio oficial, consulta también [Actualizaciones](UPDATES.md).
 
 ## 10. Problemas habituales
 
@@ -133,3 +142,7 @@ Comprueba que el dominio utiliza HTTPS, que `SESSION_COOKIE_SECURE=true` y que C
 ### Cambié una contraseña seed y no funciona
 
 Reiniciar el contenedor no modifica el hash almacenado. Ejecuta `node scripts/seed.mjs` desde la terminal de Coolify después de cambiar las variables seed.
+
+### Kacum aparece como no configurado
+
+Comprueba que `KACUM_CONTROL_PLANE_URL` esté definida en las variables de ejecución y que el contenedor pueda acceder al endpoint configurado. Esta conexión no es necesaria para el funcionamiento ordinario de la comunidad.

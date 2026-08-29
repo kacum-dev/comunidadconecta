@@ -27,14 +27,14 @@ export function ProductControlSettings({ initialState }: { initialState: Product
 
   async function save() {
     if (usageType === "commercial" && !state.commercialLicense.active) {
-      setError("Para declarar uso comercial primero debes activar una licencia emitida desde LAB OS.");
+      setError("Para declarar uso comercial primero debes activar una licencia emitida por Kacum.");
       return;
     }
     setBusy(true); setMessage(""); setError("");
     try {
       const updated = await request("/api/settings/product-control", { usageType, telemetryLevel }, "PATCH");
       setState(updated);
-      setMessage(telemetryLevel === "disabled" ? "Configuración guardada. No se enviará telemetría." : "Configuración guardada y sincronizada con LAB OS.");
+      setMessage(telemetryLevel === "disabled" ? "Configuración guardada. No se enviará telemetría." : "Configuración guardada y sincronizada con Kacum.");
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "No se pudo guardar.");
     } finally { setBusy(false); }
@@ -56,7 +56,7 @@ export function ProductControlSettings({ initialState }: { initialState: Product
     setBusy(true); setMessage(""); setError("");
     try {
       const updated = await request("/api/settings/product-control/sync", { force: true });
-      setState(updated); setMessage("LAB OS ha recibido el estado agregado de esta instalación.");
+      setState(updated); setMessage("Kacum ha recibido el estado agregado de esta instalación.");
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "No se pudo sincronizar.");
     } finally { setBusy(false); }
@@ -72,7 +72,7 @@ export function ProductControlSettings({ initialState }: { initialState: Product
         </span>
       </header>
 
-      {!state.controlPlaneConfigured && <div className={styles.warning}><Icon name="info" size={18} /><span><strong>LAB OS no está configurado</strong><small>Añade LABOS_CONTROL_PLANE_URL al servidor para registrar instalaciones o activar licencias.</small></span></div>}
+      {!state.controlPlaneConfigured && <div className={styles.warning}><Icon name="info" size={18} /><span><strong>Kacum no está configurado</strong><small>Añade KACUM_CONTROL_PLANE_URL al servidor para registrar instalaciones o activar licencias comerciales.</small></span></div>}
 
       <div className={styles.grid}>
         <div className={styles.field}><label htmlFor="product-usage">Finalidad de esta instalación</label><select id="product-usage" value={usageType} onChange={(event) => setUsageType(event.target.value as ProductUsageType)} disabled={busy}>{Object.entries(usageLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><small>El administrador invitado por una comunidad no convierte por sí mismo el uso en comercial.</small></div>
@@ -85,7 +85,7 @@ export function ProductControlSettings({ initialState }: { initialState: Product
 
       <div className={styles.actions}><button type="button" className="button button-primary" onClick={() => void save()} disabled={busy}>{busy ? "Procesando…" : "Guardar configuración"}</button><button type="button" className="button button-secondary" onClick={() => void sync()} disabled={busy || telemetryLevel === "disabled" || !state.controlPlaneConfigured}>Enviar estado ahora</button></div>
 
-      {!state.commercialLicense.active && <div className={styles.activation}><div><strong>¿Esta instalación se utiliza comercialmente?</strong><p>Introduce la clave emitida desde LAB OS. La clave no se conserva: solo se guarda un certificado firmado que puede verificarse sin conexión.</p></div><div className={styles.activationForm}><input type="password" autoComplete="off" value={licenseKey} onChange={(event) => setLicenseKey(event.target.value)} placeholder="Clave comercial" disabled={busy || !state.controlPlaneConfigured} /><button type="button" className="button button-secondary" onClick={() => void activate()} disabled={busy || !licenseKey.trim() || !state.controlPlaneConfigured}>Activar</button></div></div>}
+      {!state.commercialLicense.active && <div className={styles.activation}><div><strong>¿Esta instalación se utiliza comercialmente?</strong><p>Introduce la clave emitida por Kacum. La clave no se conserva: solo se guarda un certificado firmado que puede verificarse sin conexión.</p></div><div className={styles.activationForm}><input type="password" autoComplete="off" value={licenseKey} onChange={(event) => setLicenseKey(event.target.value)} placeholder="Clave comercial" disabled={busy || !state.controlPlaneConfigured} /><button type="button" className="button button-secondary" onClick={() => void activate()} disabled={busy || !licenseKey.trim() || !state.controlPlaneConfigured}>Activar</button></div></div>}
 
       {state.commercialLicense.active && <div className={styles.license}><Icon name="badge-check" size={20} /><span><strong>Certificado comercial verificado</strong><small>Licencia {state.commercialLicense.licenseId} · versión {state.commercialLicense.majorVersion}.x · sin caducidad</small></span></div>}
       {message && <div className={styles.success} role="status">{message}</div>}
