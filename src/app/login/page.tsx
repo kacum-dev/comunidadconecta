@@ -4,6 +4,7 @@ import { Icon } from "@/components/Icon";
 import { LoginForm } from "@/components/LoginForm";
 import { getAuthContext } from "@/lib/auth";
 import { getPublicDemoConfig } from "@/lib/demo";
+import { isDemoInstance } from "@/lib/instance-mode";
 
 export const metadata: Metadata = { title: "Acceso" };
 export const dynamic = "force-dynamic";
@@ -11,8 +12,10 @@ export const dynamic = "force-dynamic";
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ demo?: string | string[] }> }) {
   const context = await getAuthContext();
   if (context) redirect("/inicio");
-  const demo = await getPublicDemoConfig();
-  const requestedDemo = (await searchParams).demo === "1";
+
+  const demoInstance = isDemoInstance();
+  const demo = demoInstance ? await getPublicDemoConfig() : null;
+  const requestedDemo = demoInstance && (await searchParams).demo === "1";
 
   return (
     <main className="login-page">
@@ -32,12 +35,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </section>
       <section className="login-panel">
         <div className="login-card">
-          <span className="eyebrow">ACCESO PRIVADO</span>
-          <h2>Te damos la bienvenida</h2>
-          <p>Entra con la cuenta vinculada a tu comunidad.</p>
-          <LoginForm demo={demo} initialDemoOpen={requestedDemo} />
+          <span className="eyebrow">{demoInstance ? "ENTORNO DE DEMOSTRACIÓN" : "ACCESO PRIVADO"}</span>
+          <h2>{demoInstance ? "Explora Comunidad Conecta" : "Te damos la bienvenida"}</h2>
+          <p>{demoInstance ? "Accede únicamente con perfiles ficticios preparados para conocer la plataforma." : "Entra con la cuenta vinculada a tu comunidad."}</p>
+          <LoginForm demo={demo} initialDemoOpen={requestedDemo || demoInstance} allowStandardLogin={!demoInstance} />
         </div>
-        <p className="login-legal">Al acceder aceptas las condiciones del servicio y la política de privacidad aplicables a tu comunidad.</p>
+        <p className="login-legal">{demoInstance ? "Esta instalación contiene únicamente datos de demostración." : "Al acceder aceptas las condiciones del servicio y la política de privacidad aplicables a tu comunidad."}</p>
       </section>
     </main>
   );
