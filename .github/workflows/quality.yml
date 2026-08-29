@@ -45,3 +45,6 @@ jobs:
           DATABASE_URL: postgresql://build:build@127.0.0.1:5432/build
           SESSION_COOKIE_SECURE: "true"
           SETTINGS_ENCRYPTION_KEY: ci-only-key-with-at-least-32-characters
+
+      - name: Production Docker image
+        run: docker build --progress=plain -t comunidad-conecta-ci:${{ github.sha }} .
