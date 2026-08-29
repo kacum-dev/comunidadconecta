@@ -30,7 +30,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/database/migrations ./database/migrations
-COPY --from=builder --chown=nextjs:nodejs /app/scripts/migrate.mjs /app/scripts/db-config.mjs /app/scripts/seed.mjs /app/scripts/password.mjs /app/scripts/docker-entrypoint.mjs ./scripts/
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/migrate.mjs /app/scripts/db-config.mjs /app/scripts/bootstrap-initial-admin.mjs /app/scripts/password.mjs /app/scripts/docker-entrypoint.mjs ./scripts/
 
 USER nextjs
 EXPOSE 3000
