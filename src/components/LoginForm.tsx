@@ -5,7 +5,15 @@ import { useRouter } from "next/navigation";
 import type { DemoRole, PublicDemoConfig } from "@/lib/demo-types";
 import { Icon } from "./Icon";
 
-export function LoginForm({ demo, initialDemoOpen = false }: { demo: PublicDemoConfig | null; initialDemoOpen?: boolean }) {
+export function LoginForm({
+  demo,
+  initialDemoOpen = false,
+  allowStandardLogin = true,
+}: {
+  demo: PublicDemoConfig | null;
+  initialDemoOpen?: boolean;
+  allowStandardLogin?: boolean;
+}) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,14 +29,14 @@ export function LoginForm({ demo, initialDemoOpen = false }: { demo: PublicDemoC
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const close = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !demoLoadingRole) setDemoOpen(false);
+      if (event.key === "Escape" && !demoLoadingRole && allowStandardLogin) setDemoOpen(false);
     };
     window.addEventListener("keydown", close);
     return () => {
       document.body.style.overflow = previous;
       window.removeEventListener("keydown", close);
     };
-  }, [demoLoadingRole, demoOpen]);
+  }, [allowStandardLogin, demoLoadingRole, demoOpen]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -76,7 +84,7 @@ export function LoginForm({ demo, initialDemoOpen = false }: { demo: PublicDemoC
 
   return (
     <>
-      <form className="login-form" onSubmit={submit} noValidate>
+      {allowStandardLogin && <form className="login-form" onSubmit={submit} noValidate>
         <div className="field-group">
           <label htmlFor="email">Correo electrónico</label>
           <input id="email" name="email" type="email" autoComplete="username" placeholder="tu@comunidad.es" value={email} onChange={(event) => setEmail(event.target.value)} required autoFocus />
@@ -94,9 +102,9 @@ export function LoginForm({ demo, initialDemoOpen = false }: { demo: PublicDemoC
           {loading ? "Comprobando…" : "Entrar de forma segura"}
         </button>
         <p className="login-security"><Icon name="shield-check" size={15} /> Sesión privada, revocable y limitada a tus comunidades.</p>
-      </form>
+      </form>}
 
-      {demo && <div className="demo-login-entry">
+      {demo && allowStandardLogin && <div className="demo-login-entry">
         <span><i /> o prueba la plataforma <i /></span>
         <button className="button demo-login-button" type="button" onClick={() => { setDemoError(""); setDemoOpen(true); }}>
           <Icon name="sparkles" size={18} /> Entrar en la demo
@@ -104,11 +112,18 @@ export function LoginForm({ demo, initialDemoOpen = false }: { demo: PublicDemoC
         <small>Datos ficticios · elige el perfil que quieres explorar</small>
       </div>}
 
-      {demo && demoOpen && <div className="modal-backdrop demo-login-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !demoLoadingRole) setDemoOpen(false); }}>
+      {demo && !allowStandardLogin && !demoOpen && <div className="demo-login-entry">
+        <button className="button button-primary demo-login-button" type="button" onClick={() => { setDemoError(""); setDemoOpen(true); }}>
+          <Icon name="sparkles" size={18} /> Elegir perfil de demostración
+        </button>
+        <small>Datos ficticios · sin acceso a comunidades reales</small>
+      </div>}
+
+      {demo && demoOpen && <div className="modal-backdrop demo-login-backdrop" role="presentation" onMouseDown={(event) => { if (allowStandardLogin && event.target === event.currentTarget && !demoLoadingRole) setDemoOpen(false); }}>
         <section className="demo-login-dialog" role="dialog" aria-modal="true" aria-labelledby="demo-login-title" aria-describedby="demo-login-description">
           <header>
             <div><span className="eyebrow">ENTORNO DE DEMOSTRACIÓN</span><h2 id="demo-login-title">{demo.title}</h2><p id="demo-login-description">{demo.description}</p></div>
-            <button className="icon-button" type="button" onClick={() => setDemoOpen(false)} disabled={Boolean(demoLoadingRole)} aria-label="Cerrar"><Icon name="close" /></button>
+            {allowStandardLogin && <button className="icon-button" type="button" onClick={() => setDemoOpen(false)} disabled={Boolean(demoLoadingRole)} aria-label="Cerrar"><Icon name="close" /></button>}
           </header>
           <div className="demo-login-community"><span><Icon name="building" size={20} /></span><span><strong>{demo.communityName}</strong><small>Comunidad ficticia preparada para probar la aplicación</small></span></div>
           {demo.requiresAccessCode && <div className="field-group demo-access-code"><label htmlFor="demo-access-code">Código de acceso a la demo</label><input id="demo-access-code" type="password" autoComplete="off" value={demoCode} onChange={(event) => setDemoCode(event.target.value)} placeholder="Código facilitado por Comunidad Conecta" /></div>}
