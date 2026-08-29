@@ -27,7 +27,7 @@ const PRODUCT_CODE = (process.env.COMMUNITY_CONNECTA_PRODUCT_CODE || "comunidad-
 const APP_VERSION = safeAppVersion(process.env.APP_VERSION);
 
 function planeUrl() {
-  return (process.env.LABOS_CONTROL_PLANE_URL || "").trim().replace(/\/$/, "");
+  return (process.env.KACUM_CONTROL_PLANE_URL || "").trim().replace(/\/$/, "");
 }
 
 async function row(): Promise<ProductControlRow> {
@@ -174,7 +174,7 @@ async function aggregateTelemetry(value: ProductControlRow) {
 
 async function post(path: string, body: unknown) {
   const base = planeUrl();
-  if (!base) throw new ApiError(503, "LAB OS no está configurado en esta instalación.", "control_plane_not_configured");
+  if (!base) throw new ApiError(503, "Kacum no está configurado en esta instalación.", "control_plane_not_configured");
   const response = await fetch(`${base}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "User-Agent": `ComunidadConecta/${APP_VERSION}` },
@@ -183,7 +183,7 @@ async function post(path: string, body: unknown) {
     signal: AbortSignal.timeout(8000)
   });
   const result = await response.json().catch(() => ({})) as Record<string, unknown>;
-  if (!response.ok) throw new ApiError(response.status, String(result.detail || result.error || "LAB OS rechazó la solicitud."), "control_plane_error");
+  if (!response.ok) throw new ApiError(response.status, String(result.detail || result.error || "Kacum rechazó la solicitud."), "control_plane_error");
   return result;
 }
 
@@ -228,7 +228,7 @@ export async function activateCommercialLicense(context: AuthContext, licenseKey
   const publicKey = String(result.public_key || "");
   const payload = result.payload as Record<string, unknown> | undefined;
   if (!certificate || !publicKey || !payload?.license_id) {
-    throw new ApiError(502, "LAB OS devolvió una licencia incompleta.", "invalid_certificate");
+    throw new ApiError(502, "Kacum devolvió una licencia incompleta.", "invalid_certificate");
   }
   const candidate: ProductControlRow = {
     ...value,
